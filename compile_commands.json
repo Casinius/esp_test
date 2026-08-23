@@ -1,0 +1,6 @@
+[
+{
+  "directory": "/home/cyan/Documents/esp_test",
+  "arguments": ["/home/cyan/.xmake/packages/x/xtensa-esp-elf/15.2.0/0708f37eed224b0b82faad846510ce9c/bin/xtensa-esp32s3-elf-gcc", "-c", "-o", "build/.objs/firmware/cross/xtensa/release/src/main.c.o", "src/main.c"],
+  "file": "src/main.c"
+}]
