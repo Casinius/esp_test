@@ -1,0 +1,1 @@
+[0m[1;38;2;255;0;0;1merror: [0mcannot find known tool script for /home/cyan/.xmake/packages/x/xtensa-esp-elf/15.2.0/0708f37eed224b0b82faad846510ce9c/bin/xtensa-esp32s3-elf-as[0m

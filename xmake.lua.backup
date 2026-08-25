@@ -1,0 +1,63 @@
+
+add_requires("xtensa-esp-elf")
+set_plat("cross")
+set_arch("xtensa")
+
+toolchain("esp32s3")
+    set_kind("standalone")
+    
+    on_load(function (toolchain)
+        for _, pkg in ipairs(toolchain:packages()) do
+            local dir = pkg:installdir()
+            if dir and os.isdir(dir) then
+                toolchain:set("sdkdir", dir)
+                break
+            end
+        end
+        
+        local sdkdir = toolchain:sdkdir()
+        assert(sdkdir, "xtensa-esp-elf package not found!")
+        
+        local bindir = path.join(sdkdir, "bin")
+        local prefix = "xtensa-esp32s3-elf-"  -- 用 S3 专用 wrapper
+        
+        toolchain:set("bindir", bindir)
+        toolchain:set("toolset", "cc",  prefix .. "gcc")
+        toolchain:set("toolset", "cxx", prefix .. "g++")
+        toolchain:set("toolset", "ld",  prefix .. "ld")
+        toolchain:set("toolset", "sh",  prefix .. "gcc")
+        toolchain:set("toolset", "ar",  prefix .. "ar")
+        toolchain:set("toolset", "ex",  prefix .. "ar")
+        toolchain:set("toolset", "strip", prefix .. "strip")
+        toolchain:set("toolset", "as",  prefix .. "as")
+        toolchain:set("toolset", "nm",  prefix .. "nm")
+        toolchain:set("toolset", "objcopy", prefix .. "objcopy")
+        toolchain:set("toolset", "objdump", prefix .. "objdump")
+        toolchain:set("toolset", "ranlib",  prefix .. "ranlib")
+        
+        -- ESP 通用优化选项（wrapper 已经处理了 -mdynconfig，这里加通用优化）
+        toolchain:add("cxflags", "-mlongcalls")
+        toolchain:add("cxflags", "-mtext-section-literals")
+    end)
+    
+    on_check(function (toolchain)
+        return toolchain:sdkdir() ~= nil and 
+               os.isfile(path.join(toolchain:sdkdir(), "bin", "xtensa-esp32s3-elf-gcc"))
+    end)
+toolchain_end()
+set_toolchains("esp32s3@xtensa-esp-elf")
+
+local bspdir = path.join(os.projectdir(), "esp32s3-bsp")
+
+target("firmware")
+    set_kind("binary")
+    add_files("src/*.c")
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.memory.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.rom.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.rom.api.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.rom.libgcc.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.rom.libc.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.rom.newlib.ld"), {force = true})
+    add_ldflags("-T", path.join(bspdir, "ld", "esp32s3.peripherals.ld"), {force = true})
+target_end()
+
