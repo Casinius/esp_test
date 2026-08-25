@@ -2,6 +2,8 @@
 .xmake/
 build/
 esp-idf
+.cache
+.vscode
 # MacOS Cache
 .DS_Store
 
