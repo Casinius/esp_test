@@ -86,26 +86,13 @@ target("bootloader")
     "CONFIG_ESP32_S3",        -- 开启 S3 相关代码分支
     "CONFIG_IDF_TARGET_ESP32S3"
 )
-    add_files("blsrc/bootloader/subproject/main/*.c")
-    add_files("blsrc/bootloader_support/src/*.c", {
-        exclude = {
-            "*_esp32.c",
-            "*_esp32s2.c",
-            "*_esp32c3.c",
-            "*_esp32c6.c",
-            "*_esp32h2.c",
-            "*_esp32p4.c",
-            "*_esp32c2.c",
-            -- 不排除 *_esp32s3.c
-        }
-    })
-    add_files("blsrc/log/src/*.c")
-    add_files("blsrc/log/src/os/*.c")
-    add_files("blsrc/esp_rom/patches/*.c")
-    add_files("blsrc/esp_rom/patches/*.S")
 
+    add_files("blsrc/bootloader/subproject/main/*.c")
+    add_files("blsrc/bootloader_support/bootloader_flash/src/bootloader_flash_config_esp32s3.c")
+    add_files("blsrc/bootloader_support/bootloader_flash/src/bootloader_flash.c")
+    add_files("blsrc/bootloader_support/bootloader_flash/src/flash_qio_mode.c")
     add_includedirs("blsrc/sdkconfig/")
     add_includedirs(recursive_all_dirs("blsrc"))
-    add_ldflags("-T", "blsrc/bootloader.memory.ld", {force = true})
-    add_ldflags("-T", "blsrc/bootloader.sections.ld", {force = true})
+    add_ldflags("-T blsrc/bootloader.memory.ld", {force = true})
+    add_ldflags("-T blsrc/bootloader.sections.ld", {force = true})
 target_end()
